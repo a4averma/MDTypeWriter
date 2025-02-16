@@ -40,11 +40,13 @@ A modern Markdown editor with folder management capabilities, built with Tauri a
 ## Planned Features 🚧
 
 ### Immediate Roadmap
-- [ ] Split-screen live preview mode
+- [x] Generate Presentation from Markdown
+- [x] Split-screen live preview mode
 - [ ] Table of Contents generation
 - [ ] Dark/light theme toggle
 - [ ] Image drag-and-drop support
 - [ ] Custom CSS styling support
+- [x] AI-assisted writing tools
 
 ### Future Vision
 - [ ] Version control integration
@@ -53,9 +55,7 @@ A modern Markdown editor with folder management capabilities, built with Tauri a
 - [ ] Collaborative editing
 - [ ] Plugin system for extended functionality
 - [ ] Mobile-responsive layout
-- [ ] AI-assisted writing tools
-- [ ] Export to PDF/HTML
-- [ ] Generate Presentation from Markdown
+
 
 ## Installation ⚙️
 
