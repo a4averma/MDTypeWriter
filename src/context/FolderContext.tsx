@@ -21,9 +21,9 @@ interface FolderContextType {
   handleListClick: (file: IFile) => Promise<void>;
   openHistoricalFolder: (path: string) => Promise<void>;
   closeFolder: () => void;
+  showSettings: boolean;
+  setShowSettings: (show: boolean) => void;
 }
-
-
 
 const FolderContext = createContext<FolderContextType | undefined>(undefined);
 
@@ -32,34 +32,37 @@ export function FolderProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [files, setFiles] = useState<IFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<IFile | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   const closeFolder = () => {
     setFolderPath(null);
     setFiles([]);
     setIsLoaded(false);
     setSelectedFile(null);
-  }
-
+  };
 
   const openHistoricalFolder = async (path: string) => {
     setFolderPath(path);
     setIsLoaded(true);
-    const files = await invoke('get_file_tree', { folderPath: path });
+    const files = await invoke("get_file_tree", { folderPath: path });
     setFiles(files.children as IFile[]);
-  }
-
+  };
 
   const handleListClick = async (file: IFile) => {
     if (file.is_directory) {
       if (file.isExpanded) {
-        setFiles(prevFiles => updateNestedFiles(prevFiles, file.path, [{
-          ...file,
-          isExpanded: false
-        } as IFile]));
+        setFiles((prevFiles) =>
+          updateNestedFiles(prevFiles, file.path, [
+            {
+              ...file,
+              isExpanded: false,
+            } as IFile,
+          ])
+        );
       }
     }
     setSelectedFile(file);
-  }
+  };
 
   const openFolder = async () => {
     try {
@@ -72,12 +75,12 @@ export function FolderProvider({ children }: { children: ReactNode }) {
         setFolderPath(selected);
         setIsLoaded(true);
         console.log(selected);
-        const files = await invoke('get_file_tree', { folderPath: selected });
+        const files = await invoke("get_file_tree", { folderPath: selected });
         console.log(files);
         setFiles(files.children as IFile[]);
       }
     } catch (error) {
-      console.error('Error opening folder:', error);
+      console.error("Error opening folder:", error);
     }
   };
 
@@ -92,14 +95,12 @@ export function FolderProvider({ children }: { children: ReactNode }) {
         selectedFile,
         handleListClick,
         openHistoricalFolder,
-        closeFolder
+        closeFolder,
+        showSettings,
+        setShowSettings,
       }}
     >
-
       {children}
-
-
-
     </FolderContext.Provider>
   );
 }
