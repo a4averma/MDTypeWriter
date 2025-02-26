@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { LazyStore } from '@tauri-apps/plugin-store';
 
 export interface Model {
   id: string;
@@ -70,41 +69,40 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
 }
 
 export function Selector() {
-  const { openFolder, openHistoricalFolder } = useFolderContext();
+  const { openFolder, openHistoricalFolder, folderPath } = useFolderContext();
   const [recentFolders, setRecentFolders] = useState<
     Array<{ path: string; name: string }>
   >([]);
 
-  // useEffect(() => {
-  //   // Load recent folders from Tauri store on component mount
-  //   const loadRecentFolders = async () => {
-  //     try {
-  //       const store = new LazyStore('.settings.dat');
-  //       const savedFolders = await store.get('recentFolders');
-  //       if (savedFolders) {
-  //         setRecentFolders(savedFolders as Array<{ path: string, name: string }>);
+  useEffect(() => {
+    // Load recent folders from localStorage as a fallback
+    const loadRecentFolders = async () => {
+      try {
+        const savedFolders = localStorage.getItem("mdtw-recent-folders");
+        if (savedFolders) {
+          setRecentFolders(JSON.parse(savedFolders));
+        }
+      } catch (error) {
+        console.error("Failed to load recent folders:", error);
+        toast.error("Failed to load recent folders");
+      }
+    };
 
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to load recent folders:', error);
-  //       toast.error('Failed to load recent folders');
-  //     }
-  //   };
+    loadRecentFolders();
+  }, []);
 
-  //   loadRecentFolders();
-  // }, []);
-
-  // const saveRecentFolders = async (folders: Array<{ path: string, name: string }>) => {
-  //   try {
-  //     const store = new LazyStore('.settings.dat');
-  //     await store.set('recentFolders', folders);
-  //     setRecentFolders(folders);
-
-  //   } catch (error) {
-  //     console.error('Failed to save recent folders:', error);
-  //     toast.error('Failed to save recent folders');
-  //   }
-  // };
+  const saveRecentFolders = async (
+    folders: Array<{ path: string; name: string }>
+  ) => {
+    try {
+      localStorage.setItem("mdtw-recent-folders", JSON.stringify(folders));
+      console.log("Saved recent folders:", folders);
+      setRecentFolders(folders);
+    } catch (error) {
+      console.error("Failed to save recent folders:", error);
+      toast.error("Failed to save recent folders");
+    }
+  };
 
   const openFolderFromHistory = async (path: string) => {
     try {
@@ -114,8 +112,10 @@ export function Selector() {
       if (!folderExists) {
         toast.error("Folder no longer exists");
         // Remove from recent folders
-        // const updatedFolders = recentFolders.filter(folder => folder.path !== path);
-        // await saveRecentFolders(updatedFolders);
+        const updatedFolders = recentFolders.filter(
+          (folder) => folder.path !== path
+        );
+        await saveRecentFolders(updatedFolders);
         return;
       }
 
@@ -137,22 +137,7 @@ export function Selector() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
-            onClick={async () => {
-              const path = await openFolder();
-              // if (path) {
-              //   // Extract folder name from path
-              //   const name = path.split('/').pop() || path.split('\\').pop() || path;
-              //   const newFolder = { path, name };
-
-              //   // Add to recent folders, avoiding duplicates
-              //   const updatedFolders = [
-              //     newFolder,
-              //     ...recentFolders.filter(folder => folder.path !== path)
-              //   ].slice(0, 5); // Keep only last 5 folders
-
-              //   // await saveRecentFolders(updatedFolders);
-              // }
-            }}
+            onClick={openFolder}
             className="w-full"
             variant="outline"
             size="lg"

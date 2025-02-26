@@ -54,7 +54,7 @@ dependencies:
     specifier: ^2
     version: 2.0.0
   '@tauri-apps/plugin-store':
-    specifier: ~2
+    specifier: ~2.0.0
     version: 2.0.0
   '@types/react-syntax-highlighter':
     specifier: ^15.5.13

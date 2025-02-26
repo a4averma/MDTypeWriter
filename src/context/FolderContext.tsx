@@ -72,11 +72,21 @@ export function FolderProvider({ children }: { children: ReactNode }) {
       });
 
       if (selected && !Array.isArray(selected)) {
+        localStorage.setItem(
+          "mdtw-recent-folders",
+          JSON.stringify([
+            {
+              path: selected,
+              name:
+                selected?.split("/").pop() ||
+                selected?.split("\\").pop() ||
+                selected,
+            },
+          ])
+        );
         setFolderPath(selected);
         setIsLoaded(true);
-        console.log(selected);
         const files = await invoke("get_file_tree", { folderPath: selected });
-        console.log(files);
         setFiles(files.children as IFile[]);
       }
     } catch (error) {
